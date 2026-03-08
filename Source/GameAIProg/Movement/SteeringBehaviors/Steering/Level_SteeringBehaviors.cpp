@@ -21,6 +21,7 @@ void ALevel_SteeringBehaviors::BeginPlay()
 
 	AddAgent(BehaviorTypes::Seek);
 	SteeringAgents[0].Agent->SetDebugRenderingEnabled(true);
+	
 }
 
 void ALevel_SteeringBehaviors::BeginDestroy()
@@ -162,6 +163,8 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 			if (ImGui::Checkbox("Debug Rendering", &isChecked))
 			{
 				a.Agent->SetDebugRenderingEnabled(isChecked);
+				a.Behavior->EnableDebug(isChecked);
+				/////
 			}
 
 			ImGui::Unindent();
@@ -223,14 +226,29 @@ void ALevel_SteeringBehaviors::SetAgentBehavior(ImGui_Agent& Agent)
 {
 	Agent.Behavior.reset();
 	
-	/* 
 	switch (static_cast<BehaviorTypes>(Agent.SelectedBehavior))
 	{
-	//TODO; Implement behaviors setting here
+
+	case BehaviorTypes::Seek:
+		Agent.Behavior = std::make_unique<Seek>();
+		break;
+	case BehaviorTypes::Flee:
+		Agent.Behavior = std::make_unique<Flee>();
+		break;
+	case BehaviorTypes::Arrive:
+		Agent.Behavior = std::make_unique<Arrive>();
+		break;
+	case BehaviorTypes::Pursuit:
+		Agent.Behavior = std::make_unique<Pursuit>();
+		break;
+	case BehaviorTypes::Evade:
+		Agent.Behavior = std::make_unique<Evade>();
+		break;
+	case BehaviorTypes::Wander:
+		Agent.Behavior = std::make_unique<Wander>();
 	default:
-		assert(false); // Incorrect Agent Behavior gotten during SetAgentBehavior()	
-	} 
-	*/
+		assert(false); // Incorrect Agent Behavior gotten during SetAgentBehavior()    
+	}
 
 	UpdateTarget(Agent);
 	
@@ -251,7 +269,8 @@ void ALevel_SteeringBehaviors::RefreshTargetLabels()
 void ALevel_SteeringBehaviors::UpdateTarget(ImGui_Agent& Agent)
 {
 	// Note: MouseTarget position is updated via Level BP every click
-	
+	if (!Agent.Behavior)
+		return; // or log a warning
 	bool const bUseMouseAsTarget = Agent.SelectedTarget < 0;
 	if (!bUseMouseAsTarget)
 	{
