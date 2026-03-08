@@ -9,9 +9,8 @@
 #include "Movement/SteeringBehaviors/CombinedSteering/CombinedSteeringBehaviors.h"
 #include <memory>
 #include "imgui.h"
-#ifdef GAMEAI_USE_SPACE_PARTITIONING
 #include "../SpacePartitioning/SpacePartitioning.h"
-#endif
+
 
 class Flock final
 {
@@ -49,27 +48,27 @@ private:
 	UWorld* pWorld{nullptr};
 	
 	int FlockSize{0};
+	
+	//paritioning
 	TArray<ASteeringAgent*> Agents{};
-#ifdef GAMEAI_USE_SPACE_PARTITIONING
-	//std::unique_ptr<CellSpace> pPartitionedSpace{};
-	//int NrOfCellsX{ 10 };
-	//TArray<FVector2D> OldPositions{};
-#else // No space partitioning
+	std::unique_ptr<CellSpace> pPartitionedSpace{};
+	int NrOfCellsX{10};
+	TArray<FVector2D> OldPositions{};
+
 	TArray<ASteeringAgent*> Neighbors{};
-#endif // USE_SPACE_PARTITIONING
 	
 	float NeighborhoodRadius{200.f};
 	int NrOfNeighbors{0};
 
-	ASteeringAgent* pAgentToEvade{nullptr};
+	ASteeringAgent* m_pAgentToEvade{nullptr};
 	
 	//Steering Behaviors
-	//std::unique_ptr<Separation> pSeparationBehavior{};
-	//std::unique_ptr<Cohesion> pCohesionBehavior{};
-	//std::unique_ptr<VelocityMatch> pVelMatchBehavior{};
-	//std::unique_ptr<Seek> pSeekBehavior{};
-	//std::unique_ptr<Wander> pWanderBehavior{};
-	//std::unique_ptr<Evade> pEvadeBehavior{};
+	std::unique_ptr<Separation> pSeparationBehavior{};
+	std::unique_ptr<Cohesion> pCohesionBehavior{};
+	std::unique_ptr<VelocityMatch> pVelMatchBehavior{};
+	std::unique_ptr<Seek> pSeekBehavior{};
+	std::unique_ptr<Wander> pWanderBehavior{};
+	std::unique_ptr<Evade> pEvadeBehavior{};
 	
 	std::unique_ptr<BlendedSteering> pBlendedSteering{};
 	std::unique_ptr<PrioritySteering> pPrioritySteering{};
@@ -80,4 +79,6 @@ private:
 	bool DebugRenderPartitions{true};
 
 	void RenderNeighborhood();
+	
+	bool bUseSpacePartitioning{true};
 };
