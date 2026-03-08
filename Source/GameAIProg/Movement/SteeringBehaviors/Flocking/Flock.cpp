@@ -82,16 +82,24 @@ Flock::Flock(
 
 Flock::~Flock()
 {
+	for (ASteeringAgent* Agent : Agents)
+	{
+		if (Agent && !Agent)
+		{
+			Agent->Destroy();
+		}
+	}
+	Agents.Empty();
+	
+	if (m_pAgentToEvade)
+	{
+		m_pAgentToEvade->Destroy();
+		m_pAgentToEvade = nullptr;
+	}
 }
 
 void Flock::Tick(float DeltaTime)
 {
- // TODO: update the flock
- // TODO: for every agent:
-  // TODO: register the neighbors for this agent (-> fill the memory pool with the neighbors for the currently evaluated agent)
-  // TODO: update the agent (-> the steeringbehaviors use the neighbors in the memory pool)
-  // TODO: trim the agent to the world
-
 
 
 	 for (ASteeringAgent* Agent : Agents)
@@ -191,13 +199,17 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 		ImGui::Text("%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
 		ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::Unindent();
-		ImGui::Checkbox("Use Spatial Partitioning", &bUseSpacePartitioning);
-		ImGui::Checkbox("Render Cells", &DebugRenderPartitions);
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		
+		ImGui::Text("Debug Options");
+		ImGui::Indent();
+		ImGui::Checkbox("Use Spatial Partitioning", &bUseSpacePartitioning);
+		ImGui::Checkbox("Render Partition Cells", &DebugRenderPartitions);
+		ImGui::Checkbox("Render Steering Debug", &DebugRenderSteering);
+		ImGui::Checkbox("Render Neighborhood", &DebugRenderNeighborhood);
+		ImGui::Unindent();
 		
 		ImGui::Text("Flocking");
 		ImGui::Spacing();
