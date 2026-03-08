@@ -31,6 +31,18 @@ private:
 	//Datamembers
 	bool UseMouseTarget = false;
 	bool CanDebugRender = false;
-
+	
+	//behaviour variables
+	ISteeringBehavior* pSeekBehavior{ new Seek() };
+	ISteeringBehavior* pWanderBehavior{ new Wander() };
+	ISteeringBehavior* pEvadeBehavior{ new Evade() };
+	
+	//Blended & priority
+	BlendedSteering* pBlendedSteering{ nullptr };
+	PrioritySteering* pPrioritySteering{ nullptr };
+	
+	//Steering agents
+	ASteeringAgent* pSteeringAgentBlended{ nullptr };
+	ASteeringAgent* pSteeringAgentPriority{ nullptr };
 	
 };
